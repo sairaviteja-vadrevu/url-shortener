@@ -19,7 +19,7 @@ app.set("trust proxy", true); // Trust first proxy
 // Connect to MongoDB
 require("./config/db")();
 
-const PORT = process.env.PORT || 3535; // Assign a port
+const PORT = process.env.PORT || 8080; // Assign a port
 
 // Root endpoint
 app.get("/", (req, res) => {
