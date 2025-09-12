@@ -27,13 +27,14 @@ router.post("/", authenticateToken, async (req, res) => {
     }
     const newUrl = new Url({
       shortCode,
-      shortUrl: `${req.protocol}://${req.get("host")}/${shortCode}`,
+      shortUrl: `${req.protocol}://${req.get("host")}/urls/${shortCode}`,
       longUrl,
       username,
     });
     await newUrl.save();
     res.status(201).json({
-      shortUrl: `${req.protocol}://${req.get("host")}/${shortCode}`,
+      shortUrl: `${req.protocol}://${req.get("host")}/urls/${shortCode}`,
+      shortCode,
       longUrl,
     });
   } catch (e) {
@@ -56,6 +57,7 @@ router.get("/:shortCode", async (req, res) => {
       const geo = geoip.lookup(req.ip);
       const clickEvents = new Click({
         urlId: url._id,
+        shortCode: url.shortCode,
         shortUrl: url.shortUrl,
         ipAddress: req.ip,
         country: geo ? geo.country : "Unknown",
