@@ -15,7 +15,7 @@ const router = express.Router();
 router.post("/", authenticateToken, async (req, res) => {
   try {
     const { longUrl, username } = req.body;
-    const shortUrl = nanoid(8); // Generate a unique short URL
+    const shortCode = nanoid(8); // Generate a unique short URL
     if (!longUrl || !username) {
       return res
         .status(400)
@@ -26,13 +26,14 @@ router.post("/", authenticateToken, async (req, res) => {
       return res.status(404).json({ error: "User not found" });
     }
     const newUrl = new Url({
-      shortUrl: `${req.protocol}://${req.get("host")}/${shortUrl}`,
+      shortCode,
+      shortUrl: `${req.protocol}://${req.get("host")}/${shortCode}`,
       longUrl,
       username,
     });
     await newUrl.save();
     res.status(201).json({
-      shortUrl: `${req.protocol}://${req.get("host")}/${shortUrl}`,
+      shortUrl: `${req.protocol}://${req.get("host")}/${shortCode}`,
       longUrl,
     });
   } catch (e) {
@@ -42,12 +43,12 @@ router.post("/", authenticateToken, async (req, res) => {
 });
 
 // Endpoint to redirect to the long URL
-router.get("/:shortUrl", async (req, res) => {
+router.get("/:shortCode", async (req, res) => {
   try {
-    if (!req.params.shortUrl) {
-      return res.status(400).json({ error: "Short URL is required" });
+    if (!req.params.shortCode) {
+      return res.status(400).json({ error: "Short Code is required" });
     }
-    const url = await Url.findOne({ shortUrl: req.params.shortUrl });
+    const url = await Url.findOne({ shortCode: req.params.shortCode });
     if (!url) {
       return res.status(404).json({ error: "URL not found" });
     } else {
@@ -60,6 +61,7 @@ router.get("/:shortUrl", async (req, res) => {
         country: geo ? geo.country : "Unknown",
         browser: agent.family,
         os: agent.os.family,
+        username: url.username,
       });
 
       await clickEvents.save();
