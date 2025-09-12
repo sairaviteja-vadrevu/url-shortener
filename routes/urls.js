@@ -6,6 +6,7 @@ const useragent = require("useragent");
 
 const authenticateToken = require("../middleware/auth");
 const Url = require("../models/url");
+const User = require("../models/user");
 const Click = require("../models/click");
 
 const router = express.Router();
@@ -20,8 +21,12 @@ router.post("/", authenticateToken, async (req, res) => {
         .status(400)
         .json({ error: "Long URL and username are required" });
     }
+    const user = await User.findOne({ username });
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
     const newUrl = new Url({
-      shortUrl,
+      shortUrl: `${req.protocol}://${req.get("host")}/${shortUrl}`,
       longUrl,
       username,
     });
