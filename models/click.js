@@ -1,4 +1,4 @@
-// models/event.js
+// models/click.js
 
 const mongoose = require("mongoose");
 
@@ -8,6 +8,7 @@ const clickSchema = new mongoose.Schema({
   shortUrl: { type: String, required: true, index: true },
   username: { type: String, required: true },
   timestamp: { type: Date, default: Date.now },
+  referer: { type: String },
   ipAddress: { type: String },
   country: { type: String },
   browser: { type: String },

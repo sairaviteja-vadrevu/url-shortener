@@ -63,6 +63,7 @@ router.get("/:shortCode", async (req, res) => {
         country: geo ? geo.country : "Unknown",
         browser: agent.family,
         os: agent.os.family,
+        referer: req.headers["referer"] || "Direct",
         username: url.username,
       });
 
