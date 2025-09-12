@@ -13,11 +13,17 @@ const router = express.Router();
 // Endpoint to create a short URL
 router.post("/", authenticateToken, async (req, res) => {
   try {
-    const { longUrl } = req.body;
+    const { longUrl, username } = req.body;
     const shortUrl = nanoid(8); // Generate a unique short URL
+    if (!longUrl || !username) {
+      return res
+        .status(400)
+        .json({ error: "Long URL and username are required" });
+    }
     const newUrl = new Url({
       shortUrl,
       longUrl,
+      username,
     });
     await newUrl.save();
     res.status(201).json({
