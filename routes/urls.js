@@ -76,4 +76,23 @@ router.get("/:shortCode", async (req, res) => {
   }
 });
 
+// Endpoin to get all URLs for a user
+router.post("/user", authenticateToken, async (req, res) => {
+  try {
+    const { username } = req.body;
+    if (!username) {
+      return res.status(400).json({ error: "Username is required" });
+    }
+    const user = await User.findOne({ username });
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+    const userUrls = await Url.find({ username }, { __v: 0 });
+    res.status(200).json(userUrls);
+  } catch (e) {
+    console.log(e);
+    return res.status(500).json({ error: "Server error" });
+  }
+});
+
 module.exports = router; // Export the router
